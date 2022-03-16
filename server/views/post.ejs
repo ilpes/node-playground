@@ -4,8 +4,8 @@
 <head>
   <meta charset="utf-8">
 
-  <title>{{post.title}}</title>
-  <meta name="description" content="{{post.title}}">
+  <title><%= post.title %></title>
+  <meta name="description" content="<%= post.title %>">
   <meta name="author" content="@ilpes">
 
 
@@ -21,9 +21,9 @@
     <div class="md:mx-auto p-8 mt-20 bg-white max-w-screen-md" id="comments">
         <h2 class="text-lg  font-bold text-black">Discussion</h2>
 
-        <form class="flex items-start space-x-6 mt-8 pb-8" id="new-comment" data-id="{{post.id}}">
+        <form class="flex items-start space-x-6 mt-8 pb-8" id="new-comment" data-id="<%= post.id %>">
           <div class="flex-none">
-            <img class="h-8 w-8 object-cover rounded-full" src="{{user.avatar}}" alt="{{user.username}}" />
+            <img class="h-8 w-8 object-cover rounded-full" src="<%= user.avatar %>" alt="<%= user.username %>" />
           </div>
           <div class="grow">
             <textarea required rows="1" placeholder="What are your thoughts?" class="outline-none focus:border-gray-300 rounded w-full appearance-none border border-gray-200 text-gray-400 p-2 text-xs"></textarea>
@@ -56,7 +56,7 @@
 
     <script src="/js/comments.js"></script>
     <script>
-        const post = {{{ json post }}};
+        const post = <%- JSON.stringify(post) %>;
         const container = document.getElementById('comments');
         const commentTemplate = document.getElementById('comment-template');
         let comments = new Comments(post, container, commentTemplate);

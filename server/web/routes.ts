@@ -16,7 +16,7 @@ const WebRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
             return reply.callNotFound();
         }
 
-        return reply.view('post.hbs', {
+        return reply.view('post.ejs', {
             post: post.toJSON(),
             user: request.session.user?.toJSON()
         });
