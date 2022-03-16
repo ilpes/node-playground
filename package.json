@@ -22,6 +22,7 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "fastify": "^3.27.4",
+    "fastify-plugin": "^3.0.1",
     "knex": "^1.0.4",
     "mysql2": "^2.3.3",
     "objection": "^3.0.1"
