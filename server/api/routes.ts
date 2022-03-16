@@ -14,6 +14,11 @@ const ApiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
     fastify.post<postUpVoteCommentRequest>('/comments/:commentId/upvote', {}, upVoteComment);
 
     async function saveComment(request: FastifyRequest<postCommentRequest>, reply: FastifyReply) {
+        const post =  await fastify.postService.findById(request.params.postId);
+        if  (!post) {
+            return reply.callNotFound();
+        }
+
         return reply.send("OK!");
     }
 
