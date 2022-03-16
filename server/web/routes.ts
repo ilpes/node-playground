@@ -16,7 +16,7 @@ const WebRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
             return reply.callNotFound();
         }
 
-        return post;
+        return reply.send(post);
     }
 
     async function loginRandomUser(request: FastifyRequest, reply: FastifyReply) {
