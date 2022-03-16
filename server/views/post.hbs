@@ -34,26 +34,26 @@
         </form>
 
        <div class="pb-4" id="comments-container">
-           {{#each post.comments}}
-           <div class="flex items-start space-x-6 pt-8 pb-4 first:border-t first:border-gray-200" data-id="{{this.id}}">
-              <div class="flex-none">
-                  <img class="h-8 w-8 object-cover rounded-full" src="{{this.user.avatar}}" alt="{{this.user.username}}" />
-              </div>
-              <div class="grow text-sm">
-                  <p class="font-semibold text-gray-800 leading-6">{{this.user.username}} <small class="font-normal text-gray-500"> · {{this.readable_created_at}}</small></p>
-                  <p class="text-gray-600">{{this.content}}</p>
-
-                  <div class="mt-2">
-                      <button class="hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
-                           <small class="pr-2">▲</small> Upvote <strong class="font-semibold counter">{{this.readable_upvotes_count}}</strong>
-                      </button>
+          <template id="comment-template">
+               <div class="flex items-start space-x-6 pt-8 pb-4 first:border-t first:border-gray-200" data-id="{id}">
+                  <div class="flex-none">
+                      <img class="h-8 w-8 object-cover rounded-full" src="{user_avatar}" alt="{user_username}" />
                   </div>
+                  <div class="grow text-sm">
+                      <p class="font-semibold text-gray-800 leading-6">{user_username} <small class="font-normal text-gray-500"> · {readable_created_at}</small></p>
+                      <p class="text-gray-600">{content}</p>
 
-                  <div class="test"></div>
+                      <div class="mt-2">
+                          <button class="hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
+                               <small class="pr-2">▲</small> Upvote <strong class="font-semibold counter">{readable_upvotes_count}</strong>
+                          </button>
+                      </div>
+
+                      <div class="test"></div>
+                  </div>
               </div>
-          </div>
-          {{/each}}
-       </div>
+          </template>
+      </div>
     </div>
 </body>
 </html>
