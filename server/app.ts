@@ -12,11 +12,13 @@ import UserService from "./services/user-service";
 import fastifyCookie from "fastify-cookie";
 import fastifySession from "@fastify/session";
 import User from "./models/user";
+import PostService from "./services/post-service";
 
 declare module 'fastify' {
     export interface FastifyInstance {
         database: Knex;
         userService: UserService;
+        postService: PostService;
     }
 
     export interface Session {
@@ -27,6 +29,9 @@ declare module 'fastify' {
 const addServices = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
     const userService = new UserService();
     fastify.decorate('userService', userService);
+
+    const postService = new PostService();
+    fastify.decorate('postService', postService);
 }
 
 const connectToDatabase = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
