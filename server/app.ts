@@ -13,12 +13,16 @@ import WebRoutes from "./web/routes";
 import UserService from "./services/user-service";
 import fastifyCookie from "fastify-cookie";
 import fastifySession from "@fastify/session";
+import fastifyStatic from "fastify-static";
 import User from "./models/user";
 import PostService from "./services/post-service";
 import RelativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import ApiRoutes from "./api/routes";
 import CommentService from "./services/comment-service";
+import path from "path";
+import handlebars from "handlebars";
+import pointOfView from "point-of-view";
 
 declare module 'fastify' {
     export interface FastifyInstance {
@@ -78,6 +82,15 @@ export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (
     // APIs
     fastify.register(WebRoutes);
     fastify.register(ApiRoutes, {prefix: "/api"});
+    // Template Engine
+    handlebars.registerHelper('json', context => JSON.stringify(context));
+    fastify.register(pointOfView, {
+        engine: { handlebars: handlebars },
+        root: path.join(__dirname, "views"),
+    });
+    fastify.register(fastifyStatic, {
+        root: path.join(__dirname, '../public'),
+    });
 
     next();
 }
