@@ -1,57 +1,36 @@
-import ejs from "ejs";
-import React from "react";
-import ReactDom from "react-dom";
-import Upvote from "./components/Upvote";
-import {submit} from "./helpers";
-
 function createNodeFromTemplate(template, data) {
-    let html = ejs.render(template, data, {delimiter: '?'});
+    let html = template.innerHTML.replace(/\{\s*(\w+)\s*\}/g, function(all, key) {
+        let value = data[key];
+        return (value === undefined) ? `{${key}}` : value;
+    });
     return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
 }
 
+function submit(url, data, callback) {
+    fetch(url, {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    }).then(function (res) {
+        return res.json();
+    }).then(function (data) {
+        callback(data);
+    }).catch(function(err) {
+        alert('Ooops! Something went wrong')
+    });
+}
+
+
 class Comments {
-    constructor(post, container, commentTemplate, replyTemplate) {
+    constructor(post, container, commentTemplate) {
         this.post = post;
         this.container = container;
         this.commentsContainer = this.container.querySelector('#comments-container');
         this.newCommentForm = this.container.querySelector('#new-comment');
-        this.commentTemplate = commentTemplate.innerHTML;
-        this.replyTemplate = replyTemplate.innerHTML;
-        this.commentElements = [];
+        this.commentTemplate = commentTemplate;
 
         this.renderComments();
         this.initForm();
-
-        const events = new EventSource(`/streams/posts/${post.id}/upvotes`);
-        events.addEventListener('message', this.updateComment.bind(this));
-    }
-
-    updateComment(event) {
-        const upvote = JSON.parse(event.data);
-        const commentId = Number(upvote.comment_id);
-        const parentCommentId = Number(upvote.comment.comment_id);
-        const upvoteCount = Number(upvote.comment.upvotes_count);
-
-        // If a reply has been upvoted
-        if (parentCommentId) {
-            const parentElement =  this.commentElements.find((commentElement) => {
-                return commentElement.id === parentCommentId;
-            });
-            if (parentElement ===  undefined) {
-                return;
-            }
-            parentElement.comment.updateReplyUpvotes(commentId, upvoteCount);
-            return;
-        }
-
-        // otherwise it has been a comment
-        const element =  this.commentElements.find((commentElement) => {
-            return commentElement.id === commentId;
-        });
-        if (element === undefined) {
-            return;
-        }
-        element.comment.updateUpvotes(upvoteCount);
     }
 
     initForm() {
@@ -69,32 +48,40 @@ class Comments {
         event.preventDefault();
     }
 
+    getCommentNode(comment) {
+        let data = {
+            ... comment,
+            user_avatar: comment.user.avatar,
+            user_username: comment.user.username,
+            readable_upvotes_count: comment.upvotes_count > 0 ? `(${comment.upvotes_count})` : ``,
+        }
+        return createNodeFromTemplate(this.commentTemplate, data);
+    }
+
     resetForm() {
         this.newCommentForm.querySelector('textarea').value = '';
     }
 
-    renderComment(commentData) {
+    renderComment(comment) {
         this.resetForm();
-        const comment = new Comment(commentData, this.commentTemplate, this.replyTemplate);
-        this.commentElements.push({'comment': comment, 'id': Number(commentData.id)});
-        this.commentsContainer.prepend(comment.getNode());
+        const node = this.getCommentNode(comment);
+        this.commentsContainer.prepend(node);
+        new Comment(node);
     }
 
     renderComments() {
-        for (const commentData of this.post.comments) {
-            const comment = new Comment(commentData, this.commentTemplate, this.replyTemplate);
-            this.commentElements.push({'comment': comment, 'id': Number(commentData.id)});
-            this.commentsContainer.append(comment.getNode());
+        for (const comment of this.post.comments) {
+            const node = this.getCommentNode(comment);
+            this.commentsContainer.append(node);
+            new Comment(node);
         }
     }
 }
 
 class Comment {
-    constructor(data, template, replyTemplate) {
-        const node = this.getCommentNode(data, template);
-
-        const upvotePlaceholder = node.querySelector('div.upvote-placeholder');
-        const upvoteElement = ReactDom.render(<Upvote count={data.upvotes_count} commentId={data.id}/>, upvotePlaceholder);
+    constructor(node) {
+        const upvoteButton = node.querySelector('button.upvote');
+        upvoteButton.addEventListener('click', this.send.bind(this));
 
         const replyButton = node.querySelector('button.reply');
         replyButton.addEventListener('click', this.showReplyForm.bind(this));
@@ -103,68 +90,9 @@ class Comment {
         cancelButton.addEventListener('click', this.hideReplyForm.bind(this));
 
         this.node = node;
-        this.upvoteElement = upvoteElement;
         this.replyButton = replyButton;
         this.cancelButton = cancelButton;
         this.replyForm = node.querySelector('form');
-        this.repliesContainer = node.querySelector('div.replies');
-        this.replyTemplate = replyTemplate;
-        this.replyElements = [];
-
-        this.renderReplies(data.comments, replyTemplate);
-        this.initForm();
-    }
-
-    initForm() {
-        const button = this.replyForm.querySelector('button');
-        button.addEventListener('click', this.reply.bind(this));
-    }
-
-    getNode() {
-        return this.node;
-    }
-
-    showReplies() {
-        this.repliesContainer.style.display = 'block';
-    }
-
-    resetForm() {
-        this.replyForm.querySelector('textarea').value = '';
-    }
-
-    reply(event) {
-        const reply = this.replyForm.querySelector('textarea');
-        const commentId = this.replyForm.dataset.id;
-        if(reply.value === "") {
-            return;
-        }
-        submit(`/api/comments/${commentId}/reply`, {comment: reply.value}, this.renderReply.bind(this));
-        event.preventDefault();
-    }
-
-    renderReply(replyData) {
-        this.resetForm();
-        this.showReplies();
-
-        const reply = new Reply(replyData, this.replyTemplate);
-        this.replyElements.push({'reply': reply, 'id': Number(replyData.id)});
-        this.repliesContainer.prepend(reply.getNode());
-    }
-
-    renderReplies(repliesData, replyTemplate) {
-        if(repliesData.length > 0) {
-            this.showReplies();
-        }
-
-        for (const replyData of repliesData) {
-            const reply = new Reply(replyData, this.replyTemplate);
-            this.replyElements.push({'reply': reply, 'id': Number(replyData.id)});
-            this.repliesContainer.append(reply.getNode());
-        }
-    }
-
-    getCommentNode(data, template) {
-        return createNodeFromTemplate(template, data);
     }
 
     showReplyForm(event) {
@@ -179,43 +107,15 @@ class Comment {
         this.replyButton.style.display = 'inline';
     }
 
-    updateUpvotes(count) {
-        this.upvoteElement.update(count);
+    send(event) {
+        const commentId = this.node.firstElementChild.dataset.id;
+        submit(`/api/comments/${commentId}/upvote`, {}, this.update.bind(this));
+        event.preventDefault();
     }
 
-    updateReplyUpvotes(replyId, count) {
-        const element =  this.replyElements.find((commentElement) => {
-            return commentElement.id === replyId;
-        });
-        if (element === undefined) {
-            return;
-        }
-        element.reply.updateUpvotes(count);
-    }
-}
-
-class Reply {
-    constructor(data, template) {
-        const node = this.getCommentNode(data, template);
-
-        const upvotePlaceholder = node.querySelector('div.upvote-placeholder');
-        const upvoteElement = ReactDom.render(<Upvote count={data.upvotes_count} commentId={data.id}/>, upvotePlaceholder);
-
-        this.upvoteElement = upvoteElement;
-        this.node = node;
-    }
-
-    getNode() {
-        return this.node;
-    }
-
-    getCommentNode(data, template) {
-        return createNodeFromTemplate(template, data);
-    }
-
-
-    updateUpvotes(count) {
-        this.upvoteElement.update(count);
+    update(comment) {
+        const counter = this.node.querySelector('strong.counter');
+        counter.innerText = comment.upvotes_count > 0 ? `(${comment.upvotes_count})` : ``;
     }
 }
 
