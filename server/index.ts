@@ -1,13 +1,13 @@
 import fastify from 'fastify';
 import app from './app';
 
-const server = fastify();
-
-server.register(app);
-
-server.get('/ping', async (request, reply) => {
-    return 'pong\n'
+const server = fastify({
+    logger: {
+        level: 'info',
+    },
+    ignoreTrailingSlash: true,
 });
+server.register(app);
 
 const defaultPort = 3000;
 const port = process.env.PORT ?? defaultPort;

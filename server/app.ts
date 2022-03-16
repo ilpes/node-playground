@@ -7,6 +7,7 @@ import {
     FastifyInstance,
     FastifyPluginOptions,
 } from "fastify";
+import WebRoutes from "./web/routes";
 
 declare module 'fastify' {
     export interface FastifyInstance {
@@ -23,7 +24,10 @@ const connectToDatabase = async (fastify: FastifyInstance, options: FastifyPlugi
 
 
 export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (error?: FastifyError) => void): void => {
+    // Database
     fastify.register(fp(connectToDatabase));
+    // APIs
+    fastify.register(WebRoutes);
 
     next();
 }
