@@ -1,0 +1,45 @@
+import tap from 'tap';
+import build from '../base';
+
+tap.beforeEach(async t => {
+    const fastify = await build(t);
+    await fastify.database.migrate.latest();
+    await fastify.database.seed.run();
+
+    t.context.fastify = fastify;
+});
+
+tap.afterEach(async t => {
+    const fastify = t.context.fastify;
+
+    await fastify.database.migrate.rollback();
+    await fastify.database.destroy();
+})
+
+tap.test('request a not existing route should return 404',  async t => {
+    const fastify = t.context.fastify;
+
+    t.plan(2);
+
+    const response = await fastify.inject({
+        method: 'GET',
+        url: '/not-existing-route/'
+    });
+
+    t.equal(response.statusCode, 404);
+    t.equal(response.statusMessage, 'Not Found');
+});
+
+tap.test('request an existing route should return 200',  async t => {
+    const fastify = t.context.fastify;
+
+    t.plan(2);
+
+    const response = await fastify.inject({
+        method: 'GET',
+        url: '/what-is-an-automatic-watch-and-how-do-they-work/'
+    });
+
+    t.equal(response.statusCode, 200);
+    t.equal(response.statusMessage, 'OK');
+});
