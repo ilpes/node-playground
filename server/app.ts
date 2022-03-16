@@ -6,6 +6,8 @@ import {
     FastifyError,
     FastifyInstance,
     FastifyPluginOptions,
+    FastifyReply,
+    FastifyRequest,
 } from "fastify";
 import WebRoutes from "./web/routes";
 import UserService from "./services/user-service";
@@ -36,6 +38,14 @@ const addServices = async (fastify: FastifyInstance, options: FastifyPluginOptio
 
     const postService = new PostService();
     fastify.decorate('postService', postService);
+
+    fastify.decorate('authPreHandler', async function (request: FastifyRequest, reply: FastifyReply) {
+        if (request.session.user === undefined) {
+            reply
+                .code(401)
+                .send(new Error('Unauthorized'));
+        }
+    });
 }
 
 const connectToDatabase = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
