@@ -9,11 +9,18 @@ import {
 } from "fastify";
 import WebRoutes from "./web/routes";
 import UserService from "./services/user-service";
+import fastifyCookie from "fastify-cookie";
+import fastifySession from "@fastify/session";
+import User from "./models/user";
 
 declare module 'fastify' {
     export interface FastifyInstance {
         database: Knex;
         userService: UserService;
+    }
+
+    export interface Session {
+        user: User | undefined;
     }
 }
 
@@ -31,6 +38,14 @@ const connectToDatabase = async (fastify: FastifyInstance, options: FastifyPlugi
 
 
 export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (error?: FastifyError) => void): void => {
+    // Cookies and Session
+    fastify.register(fastifyCookie)
+        .register(fastifySession, {
+            secret: process.env.KEY || '',
+            cookie: {
+                secure: process.env.NODE_ENV === 'production',
+            }
+        });
     // Database and Services
     fastify.register(fp(connectToDatabase));
     fastify.register(fp(addServices));
