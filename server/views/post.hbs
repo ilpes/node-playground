@@ -55,5 +55,13 @@
           </template>
       </div>
     </div>
+
+    <script src="/js/comments.js"></script>
+    <script>
+        const post = {{{ json post }}};
+        const container = document.getElementById('comments');
+        const commentTemplate = document.getElementById('comment-template');
+        let comments = new Comments(post, container, commentTemplate);
+    </script>
 </body>
 </html>
