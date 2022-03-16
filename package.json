@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "docker:setup": "cp -n .env.example .env",
-    "db:migrate": "knex migrate:latest && knex seed:run",
+    "db:migrate": "knex migrate:latest",
+    "db:seed": "knex seed:run",
     "dev:style": "npx tailwindcss -i ./frontend/css/style.css -o ./public/css/style.css --watch",
     "dev:server": "nodemon  -e ts,tsx  ./server/index.ts",
     "test": "tap --ts --no-coverage ./server/test/*/**.test.ts"
