@@ -23,6 +23,7 @@ declare module 'fastify' {
         database: Knex;
         userService: UserService;
         postService: PostService;
+        authPreHandler(): void;
     }
 
     export interface Session {
