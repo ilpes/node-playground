@@ -30,7 +30,22 @@ const ApiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
     }
 
     async function upVoteComment(request: FastifyRequest<postUpVoteCommentRequest>, reply: FastifyReply) {
-        return reply.send("OK!");
+        let comment =  await fastify.commentService.findById(request.params.commentId);
+        if  (!comment) {
+            return reply.callNotFound();
+        }
+
+        // Eventually add a filter to prevent user to upvote more than once
+
+        const upvote = await fastify.commentService.upvote({
+            comment_id: request.params.commentId,
+            user_id: request.session.user?.id,
+        });
+
+        // Reload comment
+        comment = await fastify.commentService.findById(request.params.commentId);
+
+        return reply.send(comment);
     }
 
 }
