@@ -5,13 +5,13 @@ class CommentService {
     async save(data: object): Promise<Comment | undefined> {
         return Comment.query()
             .insert(data)
-            .withGraphFetched('[user, upvotes]');
+            .withGraphFetched('[user, upvotes, comments.[user, upvotes]]');
     }
 
     async findById(id: number): Promise<Comment | undefined> {
         return Comment.query()
             .select('*')
-            .withGraphFetched('[user, upvotes]')
+            .withGraphFetched('[user, upvotes, comments.[user, upvotes]]')
             .findById(id);
     }
 

@@ -4,9 +4,15 @@ class PostService {
 
     async findBySlug(slug: string): Promise<Post | undefined> {
         return Post.query()
-            .withGraphFetched('comments.[user, upvotes]')
+            .withGraphFetched('comments.[user, upvotes, comments.[user, upvotes]]')
             .modifyGraph('comments', builder => {
-                builder.orderBy('id', 'DESC');
+                builder
+                    .whereNull('comment_id')
+                    .orderBy('id', 'DESC');
+            })
+            .modifyGraph('comments.comments', builder => {
+                builder
+                    .orderBy('id', 'DESC')
             })
             .select('*')
             .where({
