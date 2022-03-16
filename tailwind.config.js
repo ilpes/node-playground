@@ -1,6 +1,6 @@
 module.exports = {
     content: [
-        "./server/**/*.hbs"
+        "./server/**/*.ejs"
     ],
     theme: {
         extend: {},
