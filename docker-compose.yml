@@ -1,0 +1,37 @@
+version: '3'
+
+networks:
+  node_playground:
+
+volumes:
+  mysql_data:
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "${DOCKER_MYSQL_PORT:-3306}:3306"
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE:-playground}"
+      MYSQL_USER: "${DB_USERNAME:-playground}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-playground}"
+      MYSQL_ROOT_PASSWORD: "^ShjAdrE~n{z3B`W"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - node_playground
+
+  node:
+    image: node:16
+    working_dir: /usr/src/app
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "3000:3000"
+    networks:
+      - node_playground
