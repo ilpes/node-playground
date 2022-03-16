@@ -11,7 +11,12 @@ const WebRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
     fastify.get<GetPostRequest>('/:slug/', {schema: getPostSchema, preHandler: loginRandomUser}, getPost);
 
     async function getPost(request: FastifyRequest<GetPostRequest>, reply: FastifyReply) {
-        return "Ok!";
+        const post =  await fastify.postService.findBySlug(request.params.slug);
+        if  (!post) {
+            return reply.callNotFound();
+        }
+
+        return post;
     }
 
     async function loginRandomUser(request: FastifyRequest, reply: FastifyReply) {
