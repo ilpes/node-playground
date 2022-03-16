@@ -80,13 +80,35 @@ class Comments {
 
 class Comment {
     constructor(node) {
+        const upvoteButton = node.querySelector('button.upvote');
+        upvoteButton.addEventListener('click', this.send.bind(this));
+
+        const replyButton = node.querySelector('button.reply');
+        replyButton.addEventListener('click', this.showReplyForm.bind(this));
+
+        const cancelButton = node.querySelector('button.cancel');
+        cancelButton.addEventListener('click', this.hideReplyForm.bind(this));
+
         this.node = node;
-        const button = node.querySelector('button');
-        button.addEventListener('click', this.send.bind(this));
+        this.replyButton = replyButton;
+        this.cancelButton = cancelButton;
+        this.replyForm = node.querySelector('form');
+    }
+
+    showReplyForm(event) {
+        this.replyForm.style.display = 'flex';
+        this.cancelButton.style.display = 'inline';
+        this.replyButton.style.display = 'none';
+    }
+
+    hideReplyForm(event)  {
+        this.replyForm.style.display = 'none';
+        this.cancelButton.style.display = 'none';
+        this.replyButton.style.display = 'inline';
     }
 
     send(event) {
-        const commentId = this.node.dataset.id;
+        const commentId = this.node.firstElementChild.dataset.id;
         submit(`/api/comments/${commentId}/upvote`, {}, this.update.bind(this));
         event.preventDefault();
     }
