@@ -13,6 +13,8 @@ import fastifyCookie from "fastify-cookie";
 import fastifySession from "@fastify/session";
 import User from "./models/user";
 import PostService from "./services/post-service";
+import RelativeTime from "dayjs/plugin/relativeTime";
+import dayjs from "dayjs";
 
 declare module 'fastify' {
     export interface FastifyInstance {
@@ -27,6 +29,8 @@ declare module 'fastify' {
 }
 
 const addServices = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
+    dayjs.extend(RelativeTime);
+
     const userService = new UserService();
     fastify.decorate('userService', userService);
 
