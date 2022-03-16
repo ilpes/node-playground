@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import ApiRoutes from "./api/routes";
 import CommentService from "./services/comment-service";
 import path from "path";
-import handlebars from "handlebars";
+import ejs from "ejs";
 import pointOfView from "point-of-view";
 
 declare module 'fastify' {
@@ -83,9 +83,8 @@ export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (
     fastify.register(WebRoutes);
     fastify.register(ApiRoutes, {prefix: "/api"});
     // Template Engine
-    handlebars.registerHelper('json', context => JSON.stringify(context));
     fastify.register(pointOfView, {
-        engine: { handlebars: handlebars },
+        engine:  {ejs: ejs},
         root: path.join(__dirname, "views"),
     });
     fastify.register(fastifyStatic, {
