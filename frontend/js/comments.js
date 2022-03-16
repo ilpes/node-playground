@@ -118,3 +118,5 @@ class Comment {
         counter.innerText = comment.upvotes_count > 0 ? `(${comment.upvotes_count})` : ``;
     }
 }
+
+export { Comments };
