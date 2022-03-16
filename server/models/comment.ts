@@ -28,6 +28,15 @@ class Comment extends  Model {
                     from: 'comments.id',
                     to: 'upvotes.comment_id'
                 }
+            },
+
+            'comments': {
+                relation: Model.HasManyRelation,
+                modelClass: Comment,
+                join: {
+                    from: 'comments.id',
+                    to: 'comments.comment_id'
+                }
             }
         }
     }
