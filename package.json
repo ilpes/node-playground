@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "docker:setup": "cp -n .env.example .env",
+    "db:migrate": "knex migrate:latest && knex seed:run",
     "dev:server": "nodemon  -e ts,tsx  ./server/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
