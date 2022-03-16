@@ -14,6 +14,12 @@ class PostService {
             })
             .first();
     }
+
+    async findById(id: number): Promise<Post | undefined> {
+        return Post.query()
+            .select('*')
+            .findById(id);
+    }
 }
 
 export default PostService;
