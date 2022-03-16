@@ -60,8 +60,71 @@
                               <button class="hover:bg-violet-800 appearance-none bg-violet-700 text-white font-bold  px-4 py-2 rounded text-xs">Reply</button>
                             </div>
                           </form>
+
+          <template id="comment-template">
+               <div class="first-of-type:border-t first-of-type:border-gray-200 relative">
+                   <div class="flex items-start space-x-6 pt-8 pb-4" data-id="{id}">
+                      <div class="flex-none">
+                          <img class="h-8 w-8 object-cover rounded-full" src="{user_avatar}" alt="{user_username}" />
+                      </div>
+                      <div class="grow text-sm">
+                          <p class="font-semibold text-gray-800 leading-6">{user_username} <small class="font-normal text-gray-500"> · {readable_created_at}</small></p>
+                          <p class="text-gray-600">{content}</p>
+
+                          <div class="mt-2">
+                              <button class="upvote hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
+                                   <small class="pr-2">▲</small> Upvote <strong class="font-semibold counter">{readable_upvotes_count}</strong>
+                              </button>
+
+                              <button class="reply ml-4 hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">Reply</button>
+
+                              <button class="cancel ml-4 hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600 hidden">Cancel</button>
+
+                              <form class="flex items-start space-x-6 mt-4 hidden">
+                                <div class="grow">
+                                  <textarea required rows="1" placeholder="What are your thoughts?" class="outline-none focus:border-gray-300 rounded w-full appearance-none border border-gray-200 text-gray-400 p-2 text-xs"></textarea>
+                                </div>
+                                <div class="flex-none">
+                                  <button class="hover:bg-violet-800 appearance-none bg-violet-700 text-white font-bold  px-4 py-2 rounded text-xs">Reply</button>
+                                </div>
+                              </form>
+                          </div>
                       </div>
                   </div>
+
+                  <span class="block absolute h-[calc(100%_-_4rem)] w-px bg-gray-200 top-16 left-4"></span>
+
+                  <div class="ml-12 flex items-start space-x-6 pt-8 pb-4">
+                        <div class="flex-none">
+                            <img class="h-8 w-8 object-cover rounded-full" src="{user_avatar}" alt="{user_username}" />
+                        </div>
+                        <div class="grow text-sm">
+                            <p class="font-semibold text-gray-800 leading-6">{user_username} <small class="font-normal text-gray-500"> · {readable_created_at}</small></p>
+                            <p class="text-gray-600">{content}</p>
+
+                            <div class="mt-2">
+                                <button class="hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
+                                     <small class="pr-2">▲</small> Upvote <strong class="font-semibold counter">{readable_upvotes_count}</strong>
+                                </button>
+                            </div>
+                        </div>
+                  </div>
+
+                  <div class="ml-12 flex items-start space-x-6 pt-8 pb-4">
+                      <div class="flex-none">
+                          <img class="h-8 w-8 object-cover rounded-full" src="{user_avatar}" alt="{user_username}" />
+                      </div>
+                      <div class="grow text-sm">
+                          <p class="font-semibold text-gray-800 leading-6">{user_username} <small class="font-normal text-gray-500"> · {readable_created_at}</small></p>
+                          <p class="text-gray-600">{content}</p>
+
+                          <div class="mt-2">
+                              <button class="hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
+                                   <small class="pr-2">▲</small> Upvote <strong class="font-semibold counter">{readable_upvotes_count}</strong>
+                              </button>
+                          </div>
+                      </div>
+                </div>
               </div>
 
               <div class="replies hidden">
