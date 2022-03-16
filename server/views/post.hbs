@@ -1,0 +1,59 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>{{post.title}}</title>
+  <meta name="description" content="{{post.title}}">
+  <meta name="author" content="@ilpes">
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/style.css?v=1.0">
+
+</head>
+
+<body class="bg-gray-200 font-inter">
+    <div class="md:mx-auto p-8 mt-20 bg-white max-w-screen-md" id="comments">
+        <h2 class="text-lg  font-bold text-black">Discussion</h2>
+
+        <form class="flex items-start space-x-6 mt-8 pb-8" id="new-comment" data-id="{{post.id}}">
+          <div class="flex-none">
+            <img class="h-8 w-8 object-cover rounded-full" src="{{user.avatar}}" alt="{{user.username}}" />
+          </div>
+          <div class="grow">
+            <textarea required rows="1" placeholder="What are your thoughts?" class="outline-none focus:border-gray-300 rounded w-full appearance-none border border-gray-200 text-gray-400 p-2 text-xs"></textarea>
+          </div>
+          <div class="flex-none">
+            <button class="hover:bg-violet-800 appearance-none bg-violet-700 text-white font-bold  px-4 py-2 rounded text-xs">Comment</button>
+          </div>
+        </form>
+
+       <div class="pb-4" id="comments-container">
+           {{#each post.comments}}
+           <div class="flex items-start space-x-6 pt-8 pb-4 first:border-t first:border-gray-200" data-id="{{this.id}}">
+              <div class="flex-none">
+                  <img class="h-8 w-8 object-cover rounded-full" src="{{this.user.avatar}}" alt="{{this.user.username}}" />
+              </div>
+              <div class="grow text-sm">
+                  <p class="font-semibold text-gray-800 leading-6">{{this.user.username}} <small class="font-normal text-gray-500"> · {{this.readable_created_at}}</small></p>
+                  <p class="text-gray-600">{{this.content}}</p>
+
+                  <div class="mt-2">
+                      <button class="hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
+                           <small class="pr-2">▲</small> Upvote <strong class="font-semibold counter">{{this.readable_upvotes_count}}</strong>
+                      </button>
+                  </div>
+
+                  <div class="test"></div>
+              </div>
+          </div>
+          {{/each}}
+       </div>
+    </div>
+</body>
+</html>
