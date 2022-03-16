@@ -8,11 +8,17 @@ import {
     FastifyPluginOptions,
 } from "fastify";
 import WebRoutes from "./web/routes";
+import UserService from "./services/user-service";
 
 declare module 'fastify' {
     export interface FastifyInstance {
         database: Knex;
     }
+}
+
+const addServices = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
+    const userService = new UserService();
+    fastify.decorate('userService', userService);
 }
 
 const connectToDatabase = async (fastify: FastifyInstance, options: FastifyPluginOptions) => {
@@ -24,8 +30,9 @@ const connectToDatabase = async (fastify: FastifyInstance, options: FastifyPlugi
 
 
 export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (error?: FastifyError) => void): void => {
-    // Database
+    // Database and Services
     fastify.register(fp(connectToDatabase));
+    fastify.register(fp(addServices));
     // APIs
     fastify.register(WebRoutes);
 
