@@ -13,6 +13,7 @@ import UserService from "./services/user-service";
 declare module 'fastify' {
     export interface FastifyInstance {
         database: Knex;
+        userService: UserService;
     }
 }
 
