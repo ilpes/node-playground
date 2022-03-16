@@ -18,13 +18,14 @@ import PostService from "./services/post-service";
 import RelativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
 import ApiRoutes from "./api/routes";
+import CommentService from "./services/comment-service";
 
 declare module 'fastify' {
     export interface FastifyInstance {
         database: Knex;
         userService: UserService;
         postService: PostService;
-
+        commentService: CommentService;
         authPreHandler(): void;
     }
 
@@ -41,6 +42,9 @@ const addServices = async (fastify: FastifyInstance, options: FastifyPluginOptio
 
     const postService = new PostService();
     fastify.decorate('postService', postService);
+
+    const commentService = new CommentService();
+    fastify.decorate('commentService', commentService);
 
     fastify.decorate('authPreHandler', async function (request: FastifyRequest, reply: FastifyReply) {
         if (request.session.user === undefined) {
