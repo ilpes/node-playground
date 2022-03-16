@@ -15,7 +15,9 @@ const WebRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
     }
 
     async function loginRandomUser(request: FastifyRequest, reply: FastifyReply) {
+        request.session.user = await fastify.userService.getRandom();
     }
+
 }
 
 
