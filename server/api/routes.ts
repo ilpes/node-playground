@@ -1,7 +1,8 @@
 import {
     FastifyInstance,
     FastifyPluginAsync,
-    FastifyPluginOptions, FastifyReply,
+    FastifyPluginOptions,
+    FastifyReply,
     FastifyRequest,
 } from "fastify";
 import {postCommentRequest, postCommentSchema, postUpVoteCommentRequest} from "./schemas";
@@ -19,7 +20,13 @@ const ApiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
             return reply.callNotFound();
         }
 
-        return reply.send("OK!");
+        const comment = await fastify.commentService.save({
+            content: request.body.comment,
+            post_id: request.params.postId,
+            user_id: request.session.user?.id,
+        });
+
+        return reply.send(comment);
     }
 
     async function upVoteComment(request: FastifyRequest<postUpVoteCommentRequest>, reply: FastifyReply) {
