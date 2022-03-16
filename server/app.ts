@@ -17,12 +17,14 @@ import User from "./models/user";
 import PostService from "./services/post-service";
 import RelativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
+import ApiRoutes from "./api/routes";
 
 declare module 'fastify' {
     export interface FastifyInstance {
         database: Knex;
         userService: UserService;
         postService: PostService;
+
         authPreHandler(): void;
     }
 
@@ -71,6 +73,7 @@ export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (
     fastify.register(fp(addServices));
     // APIs
     fastify.register(WebRoutes);
+    fastify.register(ApiRoutes, {prefix: "/api"});
 
     next();
 }
