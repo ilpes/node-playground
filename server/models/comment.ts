@@ -9,6 +9,7 @@ class Comment extends  Model {
 
     id?: number;
     comment?: string;
+    post_id?: number;
 
     static get relationMappings() {
         return {
