@@ -3,10 +3,14 @@ const path = require('path');
 module.exports = {
     resolve: {
         extensions: [".jsx", ".js"],
+        fallback: {
+            "fs": false,
+            "path": false,
+        }
     },
     entry: "./frontend/js/comments.js",
-    mode: process.env.NODE_ENV || "development",
-    watch: process.env.NODE_ENV === "development",
+    mode: "development",
+    watch: true,
     watchOptions: {
         ignored: /node_modules/,
     },
