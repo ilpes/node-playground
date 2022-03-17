@@ -25,12 +25,13 @@ function beautifyCounter(n) {
 }
 
 class Comments {
-    constructor(post, container, commentTemplate) {
+    constructor(post, container, commentTemplate, replyTemplate) {
         this.post = post;
         this.container = container;
         this.commentsContainer = this.container.querySelector('#comments-container');
         this.newCommentForm = this.container.querySelector('#new-comment');
         this.commentTemplate = commentTemplate.innerHTML;
+        this.replyTemplate = replyTemplate.innerHTML;
 
         this.renderComments();
         this.initForm();
@@ -57,21 +58,21 @@ class Comments {
 
     renderComment(commentData) {
         this.resetForm();
-        const comment = new Comment(commentData, this.commentTemplate);
+        const comment = new Comment(commentData, this.commentTemplate, this.replyTemplate);
         this.commentsContainer.prepend(comment.getNode());
     }
 
     renderComments() {
         for (const commentData of this.post.comments) {
-            const comment = new Comment(commentData, this.commentTemplate);
+            const comment = new Comment(commentData, this.commentTemplate, this.replyTemplate);
             this.commentsContainer.append(comment.getNode());
         }
     }
 }
 
 class Comment {
-    constructor(data, template) {
-        const node = this.getCommentNode(data, template)
+    constructor(data, template, replyTemplate) {
+        const node = this.getCommentNode(data, template);
 
         const upvoteButton = node.querySelector('button.upvote');
         upvoteButton.addEventListener('click', this.send.bind(this));
@@ -86,10 +87,57 @@ class Comment {
         this.replyButton = replyButton;
         this.cancelButton = cancelButton;
         this.replyForm = node.querySelector('form');
+        this.repliesContainer = node.querySelector('div.replies');
+        this.replyTemplate = replyTemplate;
+
+        this.renderReplies(data.comments, replyTemplate);
+        this.initForm();
+    }
+
+    initForm() {
+        const button = this.replyForm.querySelector('button');
+        button.addEventListener('click', this.reply.bind(this));
     }
 
     getNode() {
         return this.node;
+    }
+
+    showReplies() {
+        this.repliesContainer.style.display = 'block';
+    }
+
+    resetForm() {
+        this.replyForm.querySelector('textarea').value = '';
+    }
+
+    reply(event) {
+        const reply = this.replyForm.querySelector('textarea');
+        const commentId = this.replyForm.dataset.id;
+        if(reply.value === "") {
+            return;
+        }
+        submit(`/api/comments/${commentId}/reply`, {comment: reply.value}, this.renderReply.bind(this));
+        event.preventDefault();
+    }
+
+    renderReply(replyData) {
+        this.resetForm();
+        this.showReplies();
+
+        const reply = new Reply(replyData, this.replyTemplate);
+        this.repliesContainer.prepend(reply.getNode());
+    }
+
+    renderReplies(repliesData, replyTemplate) {
+        if(repliesData.length > 0) {
+            this.showReplies();
+        }
+
+        for (const replyData of repliesData) {
+            const reply = new Reply(replyData, this.replyTemplate);
+            this.repliesContainer.append(reply.getNode());
+        }
     }
 
     getCommentNode(data, template) {
@@ -113,9 +161,43 @@ class Comment {
     }
 
     send(event) {
-        const commentId = this.node.firstElementChild.dataset.id;
+        const commentId = this.node.dataset.id;
         submit(`/api/comments/${commentId}/upvote`, {}, this.update.bind(this));
         event.preventDefault();
+    }
+
+    update(comment) {
+        const counter = this.node.querySelector('strong.counter');
+        counter.innerText = beautifyCounter(comment.upvotes_count);
+    }
+}
+
+class Reply {
+    constructor(data, template) {
+        const node = this.getCommentNode(data, template);
+
+        const upvoteButton = node.querySelector('button.upvote');
+        upvoteButton.addEventListener('click', this.send.bind(this));
+
+        this.node = node;
+    }
+
+    send(event) {
+        const commentId = this.node.dataset.id;
+        submit(`/api/comments/${commentId}/upvote`, {}, this.update.bind(this));
+        event.preventDefault();
+    }
+
+    getNode() {
+        return this.node;
+    }
+
+    getCommentNode(data, template) {
+        let parsedData = {
+            ... data,
+            readable_upvotes_count: beautifyCounter(data.upvotes_count),
+        }
+        return createNodeFromTemplate(template, parsedData);
     }
 
     update(comment) {
