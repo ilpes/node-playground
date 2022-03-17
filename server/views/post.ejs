@@ -35,8 +35,8 @@
 
        <div class="pb-4" id="comments-container">
           <script id="comment-template" type="x-tmpl-ejs">
-           <div class="first-of-type:border-t first-of-type:border-gray-200 relative">
-               <div class="flex items-start space-x-6 pt-8 pb-4" data-id="<?= id ?>">
+           <div class="first-of-type:border-t first-of-type:border-gray-200 relative" data-id="<?= id ?>">
+               <div class="flex items-start space-x-6 pt-8 pb-4">
                   <div class="flex-none">
                       <img class="h-8 w-8 object-cover rounded-full" src="<?= user.avatar ?>" alt="<?= user.username ?>" />
                   </div>
@@ -53,7 +53,7 @@
 
                           <button class="cancel ml-4 hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600 hidden">Cancel</button>
 
-                          <form class="flex items-start space-x-6 mt-4 hidden">
+                          <form class="flex items-start space-x-6 mt-4 hidden" data-id="<?= id ?>">
                             <div class="grow">
                               <textarea required rows="1" placeholder="Reply to <?= user.username ?>" class="outline-none focus:border-gray-300 rounded w-full appearance-none border border-gray-200 text-gray-400 p-2 text-xs"></textarea>
                             </div>
@@ -72,7 +72,7 @@
           </script>
 
           <script id="reply-template" type="x-tmpl-ejs">
-          <div class="ml-12 flex items-start space-x-6 pt-8 pb-4">
+          <div class="ml-12 flex items-start space-x-6 pt-8 pb-4"  data-id="<?= id ?>">
                 <div class="flex-none">
                     <img class="h-8 w-8 object-cover rounded-full" src="<?= user.avatar ?>" alt="<?= user.username ?>" />
                 </div>
@@ -81,7 +81,7 @@
                     <p class="text-gray-600"><?= content ?></p>
 
                     <div class="mt-2">
-                        <button class="hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
+                        <button class="upvote hover:text-gray-800 appearance-none text-xs font-semibold text-gray-600">
                              <small class="pr-2">▲</small> Upvote <strong class="font-semibold counter"><?= readable_upvotes_count ?></strong>
                         </button>
                     </div>
@@ -96,7 +96,8 @@
         const post = <%- JSON.stringify(post) %>;
         const container = document.getElementById('comments');
         const commentTemplate = document.getElementById('comment-template');
-        let comments = new Ghost.Comments(post, container, commentTemplate);
+        const replyTemplate = document.getElementById('reply-template');
+        let comments = new Ghost.Comments(post, container, commentTemplate, replyTemplate);
     </script>
 </body>
 </html>
