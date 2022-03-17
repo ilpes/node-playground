@@ -8,6 +8,16 @@ const postCommentSchema = {
     },
 }
 
+const postReplyCommentSchema = {
+    body: {
+        type: 'object',
+        required: ['comment'],
+        properties: {
+            comment: {type: 'string', minLength: 1},
+        }
+    },
+}
+
 interface postCommentRequest {
     Body: {
         comment: string,
@@ -23,4 +33,13 @@ interface postUpVoteCommentRequest {
     }
 }
 
-export {postCommentSchema, postCommentRequest, postUpVoteCommentRequest}
+interface postReplyCommentRequest {
+    Body: {
+        comment: string,
+    },
+    Params: {
+        commentId: number,
+    }
+}
+
+export {postCommentSchema, postCommentRequest, postUpVoteCommentRequest, postReplyCommentRequest, postReplyCommentSchema}
