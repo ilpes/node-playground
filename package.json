@@ -9,6 +9,7 @@
     "db:seed": "knex seed:run",
     "dev:style": "npx tailwindcss -i ./frontend/css/style.css -o ./public/css/style.css --watch",
     "dev:server": "nodemon  -e ts,tsx  ./server/index.ts",
+    "dev:client": "webpack",
     "test": "tap --ts --no-coverage ./server/test/*/**.test.ts"
   },
   "repository": {
