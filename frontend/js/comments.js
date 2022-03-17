@@ -1,8 +1,8 @@
+import ejs from "ejs";
+ejs.delimiter = '?';
+
 function createNodeFromTemplate(template, data) {
-    let html = template.innerHTML.replace(/\{\s*(\w+)\s*\}/g, function(all, key) {
-        let value = data[key];
-        return (value === undefined) ? `{${key}}` : value;
-    });
+    let html = ejs.render(template, data);
     return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
 }
 
@@ -20,6 +20,9 @@ function submit(url, data, callback) {
     });
 }
 
+function beautifyCounter(n) {
+    return n > 0 ? `(${n})` : ``;
+}
 
 class Comments {
     constructor(post, container, commentTemplate) {
@@ -27,7 +30,7 @@ class Comments {
         this.container = container;
         this.commentsContainer = this.container.querySelector('#comments-container');
         this.newCommentForm = this.container.querySelector('#new-comment');
-        this.commentTemplate = commentTemplate;
+        this.commentTemplate = commentTemplate.innerHTML;
 
         this.renderComments();
         this.initForm();
@@ -46,40 +49,30 @@ class Comments {
         }
         submit(`/api/posts/${postId}/comments`, {comment: comment.value}, this.renderComment.bind(this));
         event.preventDefault();
-    }
-
-    getCommentNode(comment) {
-        let data = {
-            ... comment,
-            user_avatar: comment.user.avatar,
-            user_username: comment.user.username,
-            readable_upvotes_count: comment.upvotes_count > 0 ? `(${comment.upvotes_count})` : ``,
-        }
-        return createNodeFromTemplate(this.commentTemplate, data);
-    }
+    }p
 
     resetForm() {
         this.newCommentForm.querySelector('textarea').value = '';
     }
 
-    renderComment(comment) {
+    renderComment(commentData) {
         this.resetForm();
-        const node = this.getCommentNode(comment);
-        this.commentsContainer.prepend(node);
-        new Comment(node);
+        const comment = new Comment(commentData, this.commentTemplate);
+        this.commentsContainer.prepend(comment.getNode());
     }
 
     renderComments() {
-        for (const comment of this.post.comments) {
-            const node = this.getCommentNode(comment);
-            this.commentsContainer.append(node);
-            new Comment(node);
+        for (const commentData of this.post.comments) {
+            const comment = new Comment(commentData, this.commentTemplate);
+            this.commentsContainer.append(comment.getNode());
         }
     }
 }
 
 class Comment {
-    constructor(node) {
+    constructor(data, template) {
+        const node = this.getCommentNode(data, template)
+
         const upvoteButton = node.querySelector('button.upvote');
         upvoteButton.addEventListener('click', this.send.bind(this));
 
@@ -93,6 +86,18 @@ class Comment {
         this.replyButton = replyButton;
         this.cancelButton = cancelButton;
         this.replyForm = node.querySelector('form');
+    }
+
+    getNode() {
+        return this.node;
+    }
+
+    getCommentNode(data, template) {
+        let parsedData = {
+            ... data,
+            readable_upvotes_count: beautifyCounter(data.upvotes_count),
+        }
+        return createNodeFromTemplate(template, parsedData);
     }
 
     showReplyForm(event) {
@@ -115,7 +120,7 @@ class Comment {
 
     update(comment) {
         const counter = this.node.querySelector('strong.counter');
-        counter.innerText = comment.upvotes_count > 0 ? `(${comment.upvotes_count})` : ``;
+        counter.innerText = beautifyCounter(comment.upvotes_count);
     }
 }
 
