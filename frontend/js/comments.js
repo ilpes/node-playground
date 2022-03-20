@@ -1,26 +1,12 @@
 import ejs from "ejs";
+import React from "react";
+import ReactDom from "react-dom";
+import Upvote from "./components/Upvote";
+import {submit} from "./helpers";
 
 function createNodeFromTemplate(template, data) {
     let html = ejs.render(template, data, {delimiter: '?'});
     return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
-}
-
-function submit(url, data, callback) {
-    fetch(url, {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    }).then(function (res) {
-        return res.json();
-    }).then(function (data) {
-        callback(data);
-    }).catch(function(err) {
-        alert('Ooops! Something went wrong')
-    });
-}
-
-function beautifyCounter(n) {
-    return n > 0 ? `(${n})` : ``;
 }
 
 class Comments {
@@ -107,8 +93,8 @@ class Comment {
     constructor(data, template, replyTemplate) {
         const node = this.getCommentNode(data, template);
 
-        const upvoteButton = node.querySelector('button.upvote');
-        upvoteButton.addEventListener('click', this.send.bind(this));
+        const upvotePlaceholder = node.querySelector('div.upvote-placeholder');
+        const upvoteElement = ReactDom.render(<Upvote count={data.upvotes_count} commentId={data.id}/>, upvotePlaceholder);
 
         const replyButton = node.querySelector('button.reply');
         replyButton.addEventListener('click', this.showReplyForm.bind(this));
@@ -117,6 +103,7 @@ class Comment {
         cancelButton.addEventListener('click', this.hideReplyForm.bind(this));
 
         this.node = node;
+        this.upvoteElement = upvoteElement;
         this.replyButton = replyButton;
         this.cancelButton = cancelButton;
         this.replyForm = node.querySelector('form');
@@ -177,11 +164,7 @@ class Comment {
     }
 
     getCommentNode(data, template) {
-        let parsedData = {
-            ... data,
-            readable_upvotes_count: beautifyCounter(data.upvotes_count),
-        }
-        return createNodeFromTemplate(template, parsedData);
+        return createNodeFromTemplate(template, data);
     }
 
     showReplyForm(event) {
@@ -196,20 +179,8 @@ class Comment {
         this.replyButton.style.display = 'inline';
     }
 
-    send(event) {
-        const commentId = this.node.dataset.id;
-        submit(`/api/comments/${commentId}/upvote`, {}, this.update.bind(this));
-        event.preventDefault();
-    }
-
-    update(upvote) {
-        const counter = this.node.querySelector('strong.counter');
-        counter.innerText = beautifyCounter(upvote.comment.upvotes_count);
-    }
-
     updateUpvotes(count) {
-        const counter = this.node.querySelector('strong.counter');
-        counter.innerText = beautifyCounter(count);
+        this.upvoteElement.update(count);
     }
 
     updateReplyUpvotes(replyId, count) {
@@ -227,16 +198,11 @@ class Reply {
     constructor(data, template) {
         const node = this.getCommentNode(data, template);
 
-        const upvoteButton = node.querySelector('button.upvote');
-        upvoteButton.addEventListener('click', this.send.bind(this));
+        const upvotePlaceholder = node.querySelector('div.upvote-placeholder');
+        const upvoteElement = ReactDom.render(<Upvote count={data.upvotes_count} commentId={data.id}/>, upvotePlaceholder);
 
+        this.upvoteElement = upvoteElement;
         this.node = node;
-    }
-
-    send(event) {
-        const commentId = this.node.dataset.id;
-        submit(`/api/comments/${commentId}/upvote`, {}, this.update.bind(this));
-        event.preventDefault();
     }
 
     getNode() {
@@ -244,21 +210,12 @@ class Reply {
     }
 
     getCommentNode(data, template) {
-        let parsedData = {
-            ... data,
-            readable_upvotes_count: beautifyCounter(data.upvotes_count),
-        }
-        return createNodeFromTemplate(template, parsedData);
+        return createNodeFromTemplate(template, data);
     }
 
-    update(upvote) {
-        const counter = this.node.querySelector('strong.counter');
-        counter.innerText = beautifyCounter(upvote.comment.upvotes_count);
-    }
 
     updateUpvotes(count) {
-        const counter = this.node.querySelector('strong.counter');
-        counter.innerText = beautifyCounter(count);
+        this.upvoteElement.update(count);
     }
 }
 
