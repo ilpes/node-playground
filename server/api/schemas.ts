@@ -1,3 +1,5 @@
+import {FastifyReply} from "fastify";
+
 const postCommentSchema = {
     body: {
         type: 'object',
@@ -42,4 +44,32 @@ interface postReplyCommentRequest {
     }
 }
 
-export {postCommentSchema, postCommentRequest, postUpVoteCommentRequest, postReplyCommentRequest, postReplyCommentSchema}
+interface getUpVoteStreamRequest {
+    Params: {
+        postId: number,
+    }
+}
+
+interface Client {
+    id: string,
+    reply: FastifyReply,
+    postId: number,
+}
+
+interface Message {
+    id?: string,
+    data?: Object,
+    event?: string,
+    retry?: number,
+}
+
+export {
+    postCommentSchema,
+    postCommentRequest,
+    postUpVoteCommentRequest,
+    postReplyCommentRequest,
+    postReplyCommentSchema,
+    getUpVoteStreamRequest,
+    Client,
+    Message,
+}
