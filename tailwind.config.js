@@ -1,6 +1,7 @@
 module.exports = {
     content: [
-        "./server/**/*.ejs"
+        "./server/**/*.ejs",
+        "./frontend/components/**/*.js",
     ],
     theme: {
         extend: {},
