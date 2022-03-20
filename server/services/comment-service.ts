@@ -18,6 +18,7 @@ class CommentService {
     async upvote(data: object): Promise<Upvote | undefined> {
         return Upvote.query()
             .insert(data)
+            .withGraphFetched('[comment.[upvotes]]');
     }
 }
 
