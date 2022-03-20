@@ -14,7 +14,7 @@ export default class Upvote extends React.Component {
     }
 
     upvote(event) {
-        submit(`/api/comments/${this.props.commentId}/upvote`, {}, this.update);
+        submit(`/api/comments/${this.props.commentId}/upvote`, {}, this.onUpvote);
         event.preventDefault();
     }
 
