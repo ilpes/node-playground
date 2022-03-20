@@ -8,7 +8,7 @@ import {GetPostRequest, getPostSchema} from './schemas';
 
 const WebRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyPluginOptions) =>  {
 
-    fastify.get<GetPostRequest>('/:slug/', {schema: getPostSchema, preHandler: loginRandomUser}, getPost);
+    fastify.get<GetPostRequest>('/:slug', {schema: getPostSchema, preHandler: loginRandomUser}, getPost);
 
     async function getPost(request: FastifyRequest<GetPostRequest>, reply: FastifyReply) {
         const post =  await fastify.postService.findBySlug(request.params.slug);
