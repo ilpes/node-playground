@@ -8,7 +8,7 @@ class Comment extends  Model {
     static tableName = 'comments';
 
     id?: number;
-    postId?: number;
+    post_id?: number;
 
     static get relationMappings() {
         return {
