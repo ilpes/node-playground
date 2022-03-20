@@ -1,8 +1,7 @@
 import ejs from "ejs";
-ejs.delimiter = '?';
 
 function createNodeFromTemplate(template, data) {
-    let html = ejs.render(template, data);
+    let html = ejs.render(template, data, {delimiter: '?'});
     return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
 }
 
