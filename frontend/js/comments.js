@@ -35,6 +35,13 @@ class Comments {
 
         this.renderComments();
         this.initForm();
+
+        const events = new EventSource(`/streams/posts/${post.id}/upvotes`);
+
+        events.onmessage = (event) => {
+            //const parsedData = JSON.parse(event.data);
+            console.log(event.data);
+        };
     }
 
     initForm() {
@@ -166,9 +173,9 @@ class Comment {
         event.preventDefault();
     }
 
-    update(comment) {
+    update(upvote) {
         const counter = this.node.querySelector('strong.counter');
-        counter.innerText = beautifyCounter(comment.upvotes_count);
+        counter.innerText = beautifyCounter(upvote.comment.upvotes_count);
     }
 }
 
@@ -200,9 +207,9 @@ class Reply {
         return createNodeFromTemplate(template, parsedData);
     }
 
-    update(comment) {
+    update(upvote) {
         const counter = this.node.querySelector('strong.counter');
-        counter.innerText = beautifyCounter(comment.upvotes_count);
+        counter.innerText = beautifyCounter(upvote.comment.upvotes_count);
     }
 }
 
