@@ -32,16 +32,41 @@ class Comments {
         this.newCommentForm = this.container.querySelector('#new-comment');
         this.commentTemplate = commentTemplate.innerHTML;
         this.replyTemplate = replyTemplate.innerHTML;
+        this.commentElements = [];
 
         this.renderComments();
         this.initForm();
 
         const events = new EventSource(`/streams/posts/${post.id}/upvotes`);
+        events.addEventListener('message', this.updateComment.bind(this));
+    }
 
-        events.onmessage = (event) => {
-            //const parsedData = JSON.parse(event.data);
-            console.log(event.data);
-        };
+    updateComment(event) {
+        const upvote = JSON.parse(event.data);
+        const commentId = Number(upvote.comment_id);
+        const parentCommentId = Number(upvote.comment.comment_id);
+        const upvoteCount = Number(upvote.comment.upvotes_count);
+
+        // If a reply has been upvoted
+        if (parentCommentId) {
+            const parentElement =  this.commentElements.find((commentElement) => {
+                return commentElement.id === parentCommentId;
+            });
+            if (parentElement ===  undefined) {
+                return;
+            }
+            parentElement.comment.updateReplyUpvotes(commentId, upvoteCount);
+            return;
+        }
+
+        // otherwise it has been a comment
+        const element =  this.commentElements.find((commentElement) => {
+            return commentElement.id === commentId;
+        });
+        if (element === undefined) {
+            return;
+        }
+        element.comment.updateUpvotes(upvoteCount);
     }
 
     initForm() {
@@ -57,7 +82,7 @@ class Comments {
         }
         submit(`/api/posts/${postId}/comments`, {comment: comment.value}, this.renderComment.bind(this));
         event.preventDefault();
-    }p
+    }
 
     resetForm() {
         this.newCommentForm.querySelector('textarea').value = '';
@@ -66,12 +91,14 @@ class Comments {
     renderComment(commentData) {
         this.resetForm();
         const comment = new Comment(commentData, this.commentTemplate, this.replyTemplate);
+        this.commentElements.push({'comment': comment, 'id': Number(commentData.id)});
         this.commentsContainer.prepend(comment.getNode());
     }
 
     renderComments() {
         for (const commentData of this.post.comments) {
             const comment = new Comment(commentData, this.commentTemplate, this.replyTemplate);
+            this.commentElements.push({'comment': comment, 'id': Number(commentData.id)});
             this.commentsContainer.append(comment.getNode());
         }
     }
@@ -96,6 +123,7 @@ class Comment {
         this.replyForm = node.querySelector('form');
         this.repliesContainer = node.querySelector('div.replies');
         this.replyTemplate = replyTemplate;
+        this.replyElements = [];
 
         this.renderReplies(data.comments, replyTemplate);
         this.initForm();
@@ -133,6 +161,7 @@ class Comment {
         this.showReplies();
 
         const reply = new Reply(replyData, this.replyTemplate);
+        this.replyElements.push({'reply': reply, 'id': Number(replyData.id)});
         this.repliesContainer.prepend(reply.getNode());
     }
 
@@ -143,6 +172,7 @@ class Comment {
 
         for (const replyData of repliesData) {
             const reply = new Reply(replyData, this.replyTemplate);
+            this.replyElements.push({'reply': reply, 'id': Number(replyData.id)});
             this.repliesContainer.append(reply.getNode());
         }
     }
@@ -177,6 +207,21 @@ class Comment {
         const counter = this.node.querySelector('strong.counter');
         counter.innerText = beautifyCounter(upvote.comment.upvotes_count);
     }
+
+    updateUpvotes(count) {
+        const counter = this.node.querySelector('strong.counter');
+        counter.innerText = beautifyCounter(count);
+    }
+
+    updateReplyUpvotes(replyId, count) {
+        const element =  this.replyElements.find((commentElement) => {
+            return commentElement.id === replyId;
+        });
+        if (element === undefined) {
+            return;
+        }
+        element.reply.updateUpvotes(count);
+    }
 }
 
 class Reply {
@@ -210,6 +255,11 @@ class Reply {
     update(upvote) {
         const counter = this.node.querySelector('strong.counter');
         counter.innerText = beautifyCounter(upvote.comment.upvotes_count);
+    }
+
+    updateUpvotes(count) {
+        const counter = this.node.querySelector('strong.counter');
+        counter.innerText = beautifyCounter(count);
     }
 }
 
