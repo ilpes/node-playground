@@ -18,7 +18,7 @@ import User from "./models/user";
 import PostService from "./services/post-service";
 import RelativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
-import ApiRoutes from "./api/routes";
+import {ApiRoutes, StreamRoutes} from "./api/routes";
 import CommentService from "./services/comment-service";
 import path from "path";
 import ejs from "ejs";
@@ -82,6 +82,7 @@ export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (
     // APIs
     fastify.register(WebRoutes);
     fastify.register(ApiRoutes, {prefix: "/api"});
+    fastify.register(StreamRoutes, {prefix: "/streams"});
     // Template Engine
     fastify.register(pointOfView, {
         engine:  {ejs: ejs},
