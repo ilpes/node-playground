@@ -7,6 +7,9 @@ class Comment extends  Model {
 
     static tableName = 'comments';
 
+    id?: number;
+    comment?: string;
+
     static get relationMappings() {
         return {
             'user': {

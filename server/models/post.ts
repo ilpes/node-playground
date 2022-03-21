@@ -4,6 +4,9 @@ import Comment from "./comment";
 class Post extends  Model {
     static tableName = 'posts';
 
+    id?: number;
+    slug?: string;
+
     static get relationMappings() {
         return {
             'comments': {
