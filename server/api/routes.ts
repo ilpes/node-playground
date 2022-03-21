@@ -102,7 +102,7 @@ const ApiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
             content: request.body.comment,
             post_id: comment.post_id,
             comment_id: comment.id,
-            user_id: request.session.user?.id,
+            user_id: request.user?.id,
         });
 
         return reply.send(commentReply);
