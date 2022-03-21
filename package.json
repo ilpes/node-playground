@@ -8,7 +8,7 @@
     "db:seed": "knex seed:run",
     "dev:style": "npx tailwindcss -i ./frontend/css/style.css -o ./public/css/style.css --watch",
     "dev:server": "nodemon  -e ts,tsx  ./server/index.ts",
-    "build:server": "cp -r ./server/views ./build/server/views && cp -r ./public ./build/public && tsc -p tsconfig.json",
+    "build:server": "cp -r ./public ./build/public && tsc -p tsconfig.json && cp -r ./server/views ./build/server/views",
     "build:style": "npx tailwindcss -i ./frontend/css/style.css -o ./public/css/style.css",
     "dev": "concurrently \"npm run dev:style\" \"npm run dev:server\"",
     "start": "npm run build:style && npm run build:server && node ./build/server/index.js",
