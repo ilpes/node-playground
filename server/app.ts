@@ -11,8 +11,6 @@ import {
 } from "fastify";
 import WebRoutes from "./web/routes";
 import UserService from "./services/user-service";
-import fastifyCookie from "fastify-cookie";
-import fastifySession from "@fastify/session";
 import fastifyStatic from "fastify-static";
 import User from "./models/user";
 import PostService from "./services/post-service";
@@ -33,7 +31,7 @@ declare module 'fastify' {
         authPreHandler(): void;
     }
 
-    export interface Session {
+    export interface FastifyRequest {
         user: User | undefined;
     }
 }
@@ -50,12 +48,19 @@ const addServices = async (fastify: FastifyInstance, options: FastifyPluginOptio
     const commentService = new CommentService();
     fastify.decorate('commentService', commentService);
 
+    fastify.decorateRequest('user', undefined);
     fastify.decorate('authPreHandler', async function (request: FastifyRequest, reply: FastifyReply) {
-        if (request.session.user === undefined) {
+        // Randomize user on every request
+        const user = await fastify.userService.getRandom();
+        if (user === undefined) {
             reply
                 .code(401)
                 .send(new Error('Unauthorized'));
+
+            return;
         }
+        // Decorate the request with a random user
+        request.user = user;
     });
 }
 
@@ -68,14 +73,6 @@ const connectToDatabase = async (fastify: FastifyInstance, options: FastifyPlugi
 
 
 export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (error?: FastifyError) => void): void => {
-    // Cookies and Session
-    fastify.register(fastifyCookie)
-        .register(fastifySession, {
-            secret: process.env.KEY || '',
-            cookie: {
-                secure: process.env.NODE_ENV === 'production',
-            }
-        });
     // Database and Services
     fastify.register(fp(connectToDatabase));
     fastify.register(fp(addServices));
