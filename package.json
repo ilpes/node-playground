@@ -9,7 +9,7 @@
     "dev:style": "npx tailwindcss -i ./frontend/css/style.css -o ./public/css/style.css --watch",
     "dev:server": "nodemon  -e ts,tsx  ./server/index.ts",
     "dev:client": "webpack",
-    "build:server": "cp -r ./server/views ./build/server/views && cp -r ./public ./build/public && tsc -p tsconfig.json",
+    "build:server": "cp -r ./public ./build/public && tsc -p tsconfig.json && cp -r ./server/views ./build/server/views",
     "build:style": "npx tailwindcss -i ./frontend/css/style.css -o ./public/css/style.css",
     "build:client": "webpack --mode=production",
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:style\" \"npm run dev:server\"",
