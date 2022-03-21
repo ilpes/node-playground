@@ -11,8 +11,9 @@
     "dev:client": "webpack",
     "build:server": "cp -r ./server/views ./build/server/views && cp -r ./public ./build/public && tsc -p tsconfig.json",
     "build:style": "npx tailwindcss -i ./frontend/css/style.css -o ./public/css/style.css",
-    "dev": "concurrently \"npm run dev:style\" \"npm run dev:server\"",
-    "start": "npm run build:style && npm run build:server && node ./build/server/index.js",
+    "build:client": "webpack --mode=production",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:style\" \"npm run dev:server\"",
+    "start": "npm run build:client && npm run build:style && npm run build:server && node ./build/server/index.js",
     "test": "tap --ts --no-coverage ./server/test/*/**.test.ts"
   },
   "repository": {
