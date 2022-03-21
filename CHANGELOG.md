@@ -10,3 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release. Yay!
 
+## [2.0.0] - 2022-03-21
+### Added
+- Support 1 level of comment nesting
+
+### Changed
+- Migrate the display of upvotes to React
+- Make the display of new upvotes real-time 
