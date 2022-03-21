@@ -9,7 +9,7 @@ $ git clone git@github.com:ilpes/node-playground.git
 $ cd node-playground
 
 # Set up the desired ports for the services and edit the `.env` file.
-$ cp env-example .env
+$ cp .env.example .env
 ```
 
 ### Build image
