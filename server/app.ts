@@ -11,9 +11,9 @@ import {
     FastifyRequest,
 } from "fastify";
 import WebRoutes from "./web/routes";
-import ApiRoutes from "./api/routes";
 import UserService from "./services/user-service";
 import PostService from "./services/post-service";
+import {ApiRoutes, StreamRoutes} from "./api/routes";
 import CommentService from "./services/comment-service";
 import fastifyStatic from "fastify-static";
 import dayjs from "dayjs";
@@ -79,6 +79,7 @@ export default (fastify: FastifyInstance, options: FastifyPluginOptions, next: (
     // APIs
     fastify.register(WebRoutes);
     fastify.register(ApiRoutes, {prefix: "/api"});
+    fastify.register(StreamRoutes, {prefix: "/streams"});
     // Template Engine
     fastify.register(pointOfView, {
         engine:  {ejs: ejs},

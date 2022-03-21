@@ -9,6 +9,7 @@ class Comment extends  Model {
 
     id?: number;
     comment?: string;
+    post_id?: number;
 
     static get relationMappings() {
         return {
@@ -27,6 +28,15 @@ class Comment extends  Model {
                 join: {
                     from: 'comments.id',
                     to: 'upvotes.comment_id'
+                }
+            },
+
+            'comments': {
+                relation: Model.HasManyRelation,
+                modelClass: Comment,
+                join: {
+                    from: 'comments.id',
+                    to: 'comments.comment_id'
                 }
             }
         }
