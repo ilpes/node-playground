@@ -10,7 +10,7 @@ module.exports = {
     },
     entry: "./frontend/js/comments.js",
     mode: "development",
-    watch: true,
+    watch: process.env.NODE_ENV === "development",
     watchOptions: {
         ignored: /node_modules/,
     },
