@@ -23,7 +23,7 @@ const ApiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
         const comment = await fastify.commentService.save({
             content: request.body.comment,
             post_id: request.params.postId,
-            user_id: request.session.user?.id,
+            user_id: request.user?.id,
         });
 
         return reply.send(comment);
@@ -39,7 +39,7 @@ const ApiRoutes: FastifyPluginAsync = async (fastify: FastifyInstance, opts: Fas
 
         const upvote = await fastify.commentService.upvote({
             comment_id: request.params.commentId,
-            user_id: request.session.user?.id,
+            user_id: request.user?.id,
         });
 
         // Reload comment
