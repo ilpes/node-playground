@@ -1,5 +1,6 @@
 import tap from 'tap';
 import build from '../base';
+import Post from "../../models/post";
 
 tap.beforeEach(async t => {
     const fastify = await build(t);
@@ -23,7 +24,7 @@ tap.test('request a not existing route should return 404',  async t => {
 
     const response = await fastify.inject({
         method: 'GET',
-        url: '/not-existing-route/'
+        url: '/not-existing-route'
     });
 
     t.equal(response.statusCode, 404);
@@ -35,9 +36,13 @@ tap.test('request an existing route should return 200',  async t => {
 
     t.plan(2);
 
+    const post = await Post.query()
+        .select('*')
+        .first();
+
     const response = await fastify.inject({
         method: 'GET',
-        url: '/what-is-an-automatic-watch-and-how-do-they-work/'
+        url: `/${post?.slug}`
     });
 
     t.equal(response.statusCode, 200);

@@ -16,7 +16,6 @@ export const build =  async (t: Tap.Test): Promise<FastifyInstance> => {
     // tear down our app after we are done
     t.teardown(() => {
         fastify.close();
-        console.log(`Tearing down`);
     });
 
     return fastify;
