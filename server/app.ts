@@ -1,6 +1,7 @@
 import knexConfig from "../knexfile";
 import knex, {Knex} from "knex";
 import {Model} from "objection";
+import User from "./models/user";
 import fp from "fastify-plugin";
 import {
     FastifyError,
@@ -10,14 +11,13 @@ import {
     FastifyRequest,
 } from "fastify";
 import WebRoutes from "./web/routes";
-import UserService from "./services/user-service";
-import fastifyStatic from "fastify-static";
-import User from "./models/user";
-import PostService from "./services/post-service";
-import RelativeTime from "dayjs/plugin/relativeTime";
-import dayjs from "dayjs";
 import ApiRoutes from "./api/routes";
+import UserService from "./services/user-service";
+import PostService from "./services/post-service";
 import CommentService from "./services/comment-service";
+import fastifyStatic from "fastify-static";
+import dayjs from "dayjs";
+import RelativeTime from "dayjs/plugin/relativeTime";
 import path from "path";
 import ejs from "ejs";
 import pointOfView from "point-of-view";
